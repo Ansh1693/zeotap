@@ -1,0 +1,32 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "app.ts",
+  "scripts": {
+    "start": "nodemon",
+    "test": "mocha -r tsx src/tests/astTest.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/express": "^5.0.0",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "mongoose": "^8.7.2",
+    "nodemon": "^3.1.7",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  },
+  "devDependencies": {
+    "@types/chai": "^5.0.0",
+    "@types/mocha": "^10.0.9",
+    "chai": "^5.1.1",
+    "mocha": "^10.7.3",
+    "tsx": "^4.19.1"
+  }
+}
