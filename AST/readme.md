@@ -4,6 +4,7 @@
 
 The project is divided into two main parts: the client and the server.
 
+```sh
 arch/
 ├── client/
 │ ├── components/
@@ -43,6 +44,7 @@ arch/
 │ │ └── Dockerfile
 ├── docker-compose.yml
 └── README.md
+```
 
 ## Technologies Used
 
