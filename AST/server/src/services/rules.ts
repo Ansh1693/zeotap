@@ -24,7 +24,7 @@ class ASTNode {
   }
 }
 
-const validOperators = ["AND", "OR", ">", "<", ">=", "<=", "=", "!="];
+const validOperators = [">", "<", ">=", "<=", "=", "!="];
 const validAttributes = [
   "age",
   "department",
@@ -33,6 +33,15 @@ const validAttributes = [
   "salary",
   "experience",
 ];
+
+const attributeType = {
+  age: "number",
+  department: "string",
+  income: "number",
+  spend: "number",
+  salary: "number",
+  experience: "number",
+};
 
 /**
  * Creates an AST node from a rule string.
@@ -79,6 +88,35 @@ const createRule = (ruleString: string): ASTNode => {
       createRule(right),
       mainOperator
     );
+  }
+
+  const [attribute, operator, value] = ruleString.split(" ");
+
+  if (!validAttributes.includes(attribute)) {
+    throw new Error(`Invalid attribute: ${attribute}`);
+  }
+
+  if (!validOperators.includes(operator)) {
+    throw new Error(`Invalid operator: ${operator}`);
+  }
+
+  if (isNaN(Number(value)) && !value.startsWith("'") && !value.endsWith("'")) {
+    throw new Error(`Invalid value: ${value}`);
+  }
+
+  if (
+    attributeType[attribute as keyof typeof attributeType] === "number" &&
+    isNaN(Number(value))
+  ) {
+    throw new Error(`Value for attribute ${attribute} must be a number`);
+  }
+
+  if (
+    attributeType[attribute as keyof typeof attributeType] === "string" &&
+    !value.startsWith("'") &&
+    !value.endsWith("'")
+  ) {
+    throw new Error(`Value for attribute ${attribute} must be a string`);
   }
 
   return new ASTNode("operand", null, null, ruleString);
@@ -306,6 +344,19 @@ const astToRuleString = (node: ASTNode): string => {
     throw new Error(`Unknown node type: ${node.type}`);
   }
 };
+/**
+ * Validates the attributes in the provided rule string.
+ *
+ * @param ruleString - The rule string to validate.
+ * @returns True if all attributes in the rule string are valid, false otherwise.
+ */
+const validateAttributes = (ruleString: string): boolean => {
+  const attributePattern =
+    /\b(age|department|income|spend|salary|experience)\b/g;
+  const matches = ruleString.match(attributePattern);
+  if (!matches) return false;
+  return matches.every((attr) => validAttributes.includes(attr));
+};
 
 export {
   ASTNode,
@@ -314,4 +365,5 @@ export {
   evaluateRule,
   validateRuleString,
   astToRuleString,
+  validateAttributes,
 };

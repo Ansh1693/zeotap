@@ -8,6 +8,8 @@ RUN yarn install
 
 COPY . .
 
+RUN yarn test
+
 EXPOSE 5000
 
 CMD ["yarn", "start"]

@@ -143,9 +143,8 @@ describe("AST Rule System Tests", () => {
 
     it("should handle multiple OR conditions", () => {
       const rules = [
-        "(role = 'developer' OR role = 'architect')",
         "(department = 'IT' OR department = 'Engineering')",
-        "salary > 50000",
+        "(salary > 50000 OR salary < 40000)",
       ];
 
       const ast = combineRules(rules);
@@ -179,6 +178,58 @@ describe("AST Rule System Tests", () => {
       expect(evaluateRule(createRule(convertedRule), testData)).to.equal(
         evaluateRule(ast, testData)
       );
+    });
+  });
+  describe("createRule - Invalid Rules", () => {
+    it("should handle missing comparison operator", () => {
+      const rule = "age 30";
+      expect(() => createRule(rule)).to.throw();
+    });
+
+    it("should handle invalid comparison operator", () => {
+      const rule = "age >> 30";
+      expect(() => createRule(rule)).to.throw();
+    });
+
+    it("should handle missing operand", () => {
+      const rule = "> 30";
+      expect(() => createRule(rule)).to.throw();
+    });
+
+    it("should handle invalid operand type", () => {
+      const rule = "age > 'thirty'";
+      expect(() => createRule(rule)).to.throw();
+    });
+  });
+
+  // Test 2: Invalid Rule Combination
+  describe("combineRules - Invalid Rule Combination", () => {
+    it("should handle empty rule list", () => {
+      const rules: string[] = [];
+      expect(() => combineRules(rules)).to.throw();
+    });
+
+    it("should handle invalid rule in list", () => {
+      const rules = ["age > 30", "invalid rule"];
+      expect(() => combineRules(rules)).to.throw();
+    });
+  });
+
+  // Test 3: Invalid Rule Evaluation
+  describe("evaluateRule - Invalid Rule Evaluation", () => {
+    const testData = {
+      age: 35,
+      salary: 60000,
+      department: "IT",
+    };
+
+    it("should handle evaluation of invalid rule", () => {
+      expect(() => evaluateRule(createRule("age >> 30"), testData)).to.throw();
+    });
+
+    it("should handle evaluation with missing data", () => {
+      const rule = createRule("age > 30");
+      expect(evaluateRule(rule, {})).to.be.false;
     });
   });
 });

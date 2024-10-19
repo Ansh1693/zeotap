@@ -8,6 +8,7 @@ import {
   evaluateRule,
   validateRuleString,
   astToRuleString,
+  validateAttributes,
 } from "../services/rules";
 
 const validAttributes = [
@@ -36,23 +37,28 @@ const updateRuleHandler = async (req: any, res: any) => {
     const { id } = req.params;
     const { ruleString, name } = req.body;
 
-    if (!validateRuleString(ruleString)) {
-      return res
-        .status(400)
-        .json({ message: "Invalid rule syntax, operator, or attribute" });
-    }
-
-    const updatedAST = createRule(ruleString);
-
-    const updatedRule = await Rule.findByIdAndUpdate(
-      id,
-      { name, ruleString, ast: updatedAST },
-      { new: true, runValidators: true }
-    );
-
+    const updatedRule = await Rule.findById(id);
     if (!updatedRule) {
       return res.status(404).json({ message: "Rule not found" });
     }
+
+    if (ruleString) {
+      if (!validateRuleString(ruleString) || !validateAttributes(ruleString)) {
+        return res
+          .status(400)
+          .json({ message: "Invalid rule syntax, operator, or attribute" });
+      }
+
+      const updatedAST = createRule(ruleString);
+      updatedRule.ast = updatedAST;
+      updatedRule.ruleString = ruleString;
+    }
+
+    if (name) {
+      updatedRule.name = name;
+    }
+
+    await updatedRule.save();
 
     res.status(200).json({
       message: "Rule updated successfully",
@@ -81,13 +87,8 @@ const createRuleHandler = async (req: any, res: any) => {
   try {
     const { name, ruleString } = req.body;
 
-    // Log the rule string to verify
-    console.log("Received rule name:", name);
-    console.log("Received rule string:", ruleString);
-
     // Validate the rule string
-    if (!validateRuleString(ruleString)) {
-      console.error("Validation failed for rule string:", ruleString);
+    if (!validateRuleString(ruleString) || !validateAttributes(ruleString)) {
       return res.status(400).json({
         message: "Invalid rule syntax or attribute name",
         details:
