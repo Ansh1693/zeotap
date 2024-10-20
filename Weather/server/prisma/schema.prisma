@@ -36,20 +36,19 @@ model DailySummary {
   avgHumidity       Float
   avgVisibility     Float
   dominantCondition String
-  count             Int
 
   // Add a unique constraint on (city, date)
   @@unique([city, date])
 }
 
 model Alert {
-  id          String   @id @default(cuid())
-  city        String
-  temperature Float
-  condition   String
-  alertType   String
-  timestamp   DateTime @default(now())
-  resolved    Boolean  @default(false)
+  id        String   @id @default(cuid())
+  city      String
+  condition String
+  times     Int
+  email     String
+  resolved  Boolean  @default(false)
+  timestamp DateTime @default(now())
 
   // for better query performance
   @@index([city, timestamp])

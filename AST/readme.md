@@ -5,7 +5,7 @@
 The project is divided into two main parts: the client and the server.
 
 ```sh
-arch/
+AST/
 ├── client/
 │ ├── components/
 │ │ ├── ui/
@@ -69,6 +69,74 @@ arch/
   - Implemented validation for catalog
   - Can modify already made ast by updating the rule by sending new rulestring
 
+## DB Schema
+
+```sh
+   Node:
+      type: Operator or Operand
+      left: Node | Null
+      right: Node | null
+      value: For operator AND | OR and for operand condition
+
+   Rule:
+      name: name of string
+      ruleString: condition string
+      ast: Node
+```
+
+## Create Rule
+
+The create_rule functionality is responsible for parsing a rule string and converting it into an AST. This involves:
+
+- **Parsing the Rule String**: The rule string is parsed to identify operators (e.g., AND, OR) and operands (e.g., age > 30).
+- **Building the AST**: The parsed components are used to build an AST, where each node represents an operator or operand.
+- **Validation**: The rule string is validated to ensure it has correct syntax, balanced parentheses, and valid attributes.
+
+Example
+
+```sh
+   const rule = "age > 30 AND salary > 50000";
+   const ast = createRule(rule);
+```
+
+## Combine Rules
+
+The combine_rules functionality allows multiple rules to be combined into a single AST. This is useful for creating complex rules that involve multiple conditions.
+
+- **Combining Rules**: Multiple rule strings are combined using a specified operator (default is AND).
+- **Maintaining Structure**: The combined AST maintains the structure of the individual rules, ensuring that the logical relationships between conditions are preserved.
+
+Example:
+
+```sh
+   const rules = ["age > 30", "salary > 50000"];
+   const combinedAST = combineRules(rules);
+```
+
+## Evaluate Rule
+
+The evaluate_rule functionality is responsible for evaluating an AST against a set of user data. This involves:
+
+- **Traversing the AST**: The AST is traversed to evaluate each node based on the user data.
+- **Evaluating Conditions**: Each condition in the AST is evaluated to determine if it is true or false.
+- **Returning the Result**: The final result of the evaluation (true or false) is returned.
+
+Example:
+
+```sh
+   const testData = {
+      age: 35,
+      salary: 60000,
+      department: "IT"
+   };
+   const result = evaluateRule(ast, testData);
+
+```
+
+## Why NOSQL ?
+
+NOSQL document-based model is intuitive and aligns well with the JSON-like structure of AST nodes, making it easier to work with and manipulate the data.
+
 ## Tests
 
 The following test scenarios have been implemented to ensure the correctness and robustness of the AST Rule Engine:
@@ -125,6 +193,8 @@ The following test scenarios have been implemented to ensure the correctness and
    git clone https://github.com/Ansh1693/Zeotap.git
    cd AST
    ```
+
+````
 
 2. **Run using Docker**:
 
@@ -188,7 +258,7 @@ The following test scenarios have been implemented to ensure the correctness and
 3. **Env creation**:
 
    ```sh
-   MONGO_URI= mongourl
+   MONGO_URI= mongodb+srv://ansh_zeotap:lU8jmTOS2r96RJY4@cluster0.6h0en.mongodb.net/
    ```
 
 4. **Start the server**:
@@ -207,3 +277,4 @@ The following test scenarios have been implemented to ensure the correctness and
    ```sh
    npm run test
    ```
+````
